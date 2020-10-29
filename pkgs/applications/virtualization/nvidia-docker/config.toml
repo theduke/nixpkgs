@@ -3,11 +3,11 @@ disable-require = false
 
 [nvidia-container-cli]
 #root = "/run/nvidia/driver"
-#path = "/usr/bin/nvidia-container-cli"
+path = "@clipath@"
 environment = []
 # TODO: add option to enable logging
 debug = "/var/log/nvidia-container-runtime-hook.log"
-# ldcache = "/tmp/ld.so.cache"
+ldcache = "/tmp/ld.so.cache"
 load-kmods = true
 #no-cgroups = false
 #user = "root:video"

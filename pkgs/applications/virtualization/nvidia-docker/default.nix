@@ -82,6 +82,7 @@ in stdenv.mkDerivation rec {
 
     cp ${./config.toml} $out/etc/config.toml
     substituteInPlace $out/etc/config.toml --subst-var-by glibcbin ${lib.getBin glibc}
+    substituteInPlace $out/etc/config.toml --subst-var-by clipath "$out/bin/nvidia-container-cli"
   '';
 
   meta = {
