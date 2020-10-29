@@ -86,7 +86,7 @@ in stdenv.mkDerivation rec {
     ln -s $out/bin/nvidia-container-toolkit $out/bin/nvidia-container-runtime-hook 
 
     wrapProgram $out/bin/nvidia-container-cli \
-      --prefix LD_LIBRARY_PATH : "/run/opengl-driver/lib:/run/opengl-driver-32/lib:${pkgs.linuxPackages.nvidia_x11}/lib"
+      --prefix LD_LIBRARY_PATH : "/run/opengl-driver/lib:/run/opengl-driver-32/lib:${pkgs.linuxPackages.nvidia_x11}/lib:$out/lib"
 
     cp ${./config.toml} $out/etc/config.toml
     substituteInPlace $out/etc/config.toml --subst-var-by glibcbin ${lib.getBin glibc}
