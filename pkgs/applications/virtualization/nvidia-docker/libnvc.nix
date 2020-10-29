@@ -9,23 +9,23 @@
 , libtirpc
 }:
 let
-  modp-ver = "396.51";
+  modp-ver = "450.57";
   nvidia-modprobe = fetchFromGitHub {
     owner = "NVIDIA";
     repo = "nvidia-modprobe";
     rev = modp-ver;
-    sha256 = "1fw2qwc84k64agw6fx2v0mjf88aggph9c6qhs4cv7l3gmflv8qbk";
+    sha256 = "0r4f6lpbbqqs9932xd2mr7bxn6a3xdalcwq332fc1amrrkgzfyv7";
   };
 in
 stdenv.mkDerivation rec {
   pname = "libnvidia-container";
-  version = "1.0.6";
+  version = "1.3.0";
 
   src = fetchFromGitHub {
     owner = "NVIDIA";
     repo = "libnvidia-container";
     rev = "v${version}";
-    sha256 = "1pnpc9knwh8d1zqb28zc3spkjc00w0z10vd3jna8ksvpl35jl7w3";
+    sha256 = "1csxl2m7gwgf727gbpj58lppavnxn0n4ylf63lii6vfz0qswhv61";
   };
 
   patches = [
@@ -33,7 +33,7 @@ stdenv.mkDerivation rec {
     # doesn't get used on NixOS. Additional support binaries like nvidia-smi
     # are not resolved via the environment PATH but via the derivation output
     # path.
-    ./libnvc-ldconfig-and-path-fixes.patch
+    # ./libnvc-ldconfig-and-path-fixes.patch
 
     # the libnvidia-container Makefile wants to build and install static
     # libtirpc libraries; this patch prevents that from happening
@@ -55,9 +55,12 @@ stdenv.mkDerivation rec {
       -e 's/^COMPILER :=.*/COMPILER = $(CC)/' \
       mk/common.mk
 
+    # Prepare nvidia-modprobe to prevent a download via curl.
+    # The steps below are normally done by mk/nvidia-modprobe.mk
     mkdir -p deps/src/nvidia-modprobe-${modp-ver}
     cp -r ${nvidia-modprobe}/* deps/src/nvidia-modprobe-${modp-ver}
     chmod -R u+w deps/src
+    patch -d deps/src/nvidia-modprobe-${modp-ver} -p1 < mk/nvidia-modprobe.patch
     touch deps/src/nvidia-modprobe-${modp-ver}/.download_stamp
   '';
 
