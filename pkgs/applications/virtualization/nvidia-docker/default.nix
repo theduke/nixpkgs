@@ -73,11 +73,8 @@ in stdenv.mkDerivation rec {
 
     mkdir $out/lib
 
-    # symlink library because it's not present
-    ln -s ${pkgs.linuxPackages.nvidia_x11}/lib/libGLESv2_nvidia.so.1 $out/lib/libGLESv2_nvidia.so.2
-
     # Generate a ldconfig cache file for nvidia-container-cli
-    ${pkgs.glibc.bin}/bin/ldconfig -C $out/lib/ld.so.cache ${pkgs.linuxPackages.nvidia_x11}/lib $out/lib
+    ${pkgs.glibc.bin}/bin/ldconfig -C $out/lib/ld.so.cache ${pkgs.linuxPackages.nvidia_x11}/lib 
 
     # Allow nvidia-container-runtime to find runc
     wrapProgram $out/bin/nvidia-container-runtime --prefix PATH : "${runc}/bin:$out/bin"
@@ -86,7 +83,7 @@ in stdenv.mkDerivation rec {
     ln -s $out/bin/nvidia-container-toolkit $out/bin/nvidia-container-runtime-hook 
 
     wrapProgram $out/bin/nvidia-container-cli \
-      --prefix LD_LIBRARY_PATH : "/run/opengl-driver/lib:/run/opengl-driver-32/lib:${pkgs.linuxPackages.nvidia_x11}/lib:$out/lib"
+      --prefix LD_LIBRARY_PATH : "${pkgs.linuxPackages.nvidia_x11}/lib"
 
     cp ${./config.toml} $out/etc/config.toml
     substituteInPlace $out/etc/config.toml --subst-var-by glibcbin ${lib.getBin glibc}

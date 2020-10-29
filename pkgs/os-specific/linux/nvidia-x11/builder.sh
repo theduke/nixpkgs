@@ -175,6 +175,8 @@ installPhase() {
         # FIXME: needs PATH and other fixes
         # install -Dm755 nvidia-bug-report.sh $bin/bin/nvidia-bug-report.sh
     fi
+
+    ln -s $out/lib/libGLESv2_nvidia.so.1 $out/lib/libGLESv2_nvidia.so.2
 }
 
 genericBuild
