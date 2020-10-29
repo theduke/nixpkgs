@@ -1,0 +1,19 @@
+diff --git a/src/cli/configure.c b/src/cli/configure.c
+index 66147d1..5c22bd9 100644
+--- a/src/cli/configure.c
++++ b/src/cli/configure.c
+@@ -374,10 +374,14 @@ configure_command(const struct context *ctx)
+                 warnx("permission error: %s", err.msg);
+                 goto fail;
+         }
++        /*
++        ldcache updates are disabled since we use a cache generated at 
++        derivation build time.
+         if (nvc_ldcache_update(nvc, cnt) < 0) {
+                 warnx("ldcache error: %s", nvc_error(nvc));
+                 goto fail;
+         }
++        */
+ 
+         if (perm_set_capabilities(&err, CAP_EFFECTIVE, ecaps[NVC_SHUTDOWN], ecaps_size(NVC_SHUTDOWN)) < 0) {
+                 warnx("permission error: %s", err.msg);
