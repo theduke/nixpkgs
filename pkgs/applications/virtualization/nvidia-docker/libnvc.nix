@@ -38,7 +38,7 @@ stdenv.mkDerivation rec {
 
     # the libnvidia-container Makefile wants to build and install static
     # libtirpc libraries; this patch prevents that from happening
-    ./avoid-static-libtirpc-build.patch
+    ./patches/avoid-static-libtirpc-build.patch
   ];
 
   makeFlags = [

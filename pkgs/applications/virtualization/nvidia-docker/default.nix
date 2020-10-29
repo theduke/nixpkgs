@@ -77,13 +77,15 @@ in stdenv.mkDerivation rec {
     ${pkgs.glibc.bin}/bin/ldconfig -C $out/lib/ld.so.cache ${pkgs.linuxPackages.nvidia_x11}/lib 
 
     # Allow nvidia-container-runtime to find runc
-    wrapProgram $out/bin/nvidia-container-runtime --prefix PATH : "${runc}/bin:$out/bin"
+    wrapProgram $out/bin/nvidia-container-runtime \
+      --prefix PATH : "${runc}/bin:$out/bin"
 
     # Create a symlink since the old hook path seems to still be used somewhere
     ln -s $out/bin/nvidia-container-toolkit $out/bin/nvidia-container-runtime-hook 
 
     wrapProgram $out/bin/nvidia-container-cli \
       --prefix LD_LIBRARY_PATH : "${pkgs.linuxPackages.nvidia_x11}/lib"
+      --prefix PATH : "${pkgs.linuxPackages.nvidia_x11}/bin"
 
     cp ${./config.toml} $out/etc/config.toml
     substituteInPlace $out/etc/config.toml --subst-var-by glibcbin ${lib.getBin glibc}
