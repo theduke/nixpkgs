@@ -84,7 +84,7 @@ in stdenv.mkDerivation rec {
     ln -s $out/bin/nvidia-container-toolkit $out/bin/nvidia-container-runtime-hook 
 
     wrapProgram $out/bin/nvidia-container-cli \
-      --prefix LD_LIBRARY_PATH : "${pkgs.linuxPackages.nvidia_x11}/lib"
+      --prefix LD_LIBRARY_PATH : "${pkgs.linuxPackages.nvidia_x11}/lib" \
       --prefix PATH : "${pkgs.linuxPackages.nvidia_x11}/bin"
 
     cp ${./config.toml} $out/etc/config.toml
