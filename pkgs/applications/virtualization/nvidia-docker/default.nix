@@ -71,9 +71,13 @@ in stdenv.mkDerivation rec {
     mkdir -p $out/{bin,etc}
     cp -r bin $out
 
-    # Generate a ldconfig cache file for nvidia-container-cli
     mkdir $out/lib
-    ${pkgs.glibc.bin}/bin/ldconfig -C $out/lib/ld.so.cache ${pkgs.linuxPackages.nvidia_x11}/lib
+
+    # symlink library because it's not present
+    ln -s ${pkgs.linuxPackages.nvidia_x11}/lib/libGLESv2_nvidia.so.1 $out/lib/libGLESv2_nvidia.so.2
+
+    # Generate a ldconfig cache file for nvidia-container-cli
+    ${pkgs.glibc.bin}/bin/ldconfig -C $out/lib/ld.so.cache ${pkgs.linuxPackages.nvidia_x11}/lib $out/lib
 
     # Allow nvidia-container-runtime to find runc
     wrapProgram $out/bin/nvidia-container-runtime --prefix PATH : "${runc}/bin:$out/bin"
