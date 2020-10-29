@@ -7,7 +7,7 @@ path = "@clipath@"
 environment = []
 # TODO: add option to enable logging
 debug = "/var/log/nvidia-container-runtime-hook.log"
-ldcache = "/tmp/ld.so.cache"
+ldcache = "@ldcachepath@"
 load-kmods = true
 #no-cgroups = false
 #user = "root:video"

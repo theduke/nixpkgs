@@ -34,7 +34,6 @@ stdenv.mkDerivation rec {
     # are not resolved via the environment PATH but via the derivation output
     # path.
     # ./libnvc-ldconfig-and-path-fixes.patch
-    ./ldconfig-fixup.patch
 
     # the libnvidia-container Makefile wants to build and install static
     # libtirpc libraries; this patch prevents that from happening

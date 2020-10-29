@@ -71,6 +71,10 @@ in stdenv.mkDerivation rec {
     mkdir -p $out/{bin,etc}
     cp -r bin $out
 
+    # Generate a ldconfig cache file for nvidia-container-cli
+    mkdir $out/lib
+    ${pkgs.glibc.bin}/bin/ldconfig -C $out/lib/ld.so.cache ${pkgs.linuxPackages.nvidia_x11}/lib
+
     # Allow nvidia-container-runtime to find runc
     wrapProgram $out/bin/nvidia-container-runtime --prefix PATH : "${runc}/bin:$out/bin"
 
@@ -83,6 +87,8 @@ in stdenv.mkDerivation rec {
     cp ${./config.toml} $out/etc/config.toml
     substituteInPlace $out/etc/config.toml --subst-var-by glibcbin ${lib.getBin glibc}
     substituteInPlace $out/etc/config.toml --subst-var-by clipath "$out/bin/nvidia-container-cli"
+
+    substituteInPlace $out/etc/config.toml --subst-var-by ldcachepath "$out/lib/ld.so.cache"
   '';
 
   meta = {
