@@ -72,7 +72,10 @@ in stdenv.mkDerivation rec {
     cp -r bin $out
 
     # Allow nvidia-container-runtime to find runc
-    wrapProgram $out/bin/nvidia-container-runtime --prefix PATH : "${runc}/bin"
+    wrapProgram $out/bin/nvidia-container-runtime --prefix PATH : "${runc}/bin:$out/bin"
+
+    # Create a symlink since the old hook path seems to still be used somewhere
+    ln -s $out/bin/nvidia-container-toolkit $out/bin/nvidia-container-runtime-hook 
 
     wrapProgram $out/bin/nvidia-container-cli \
       --prefix LD_LIBRARY_PATH : /run/opengl-driver/lib:/run/opengl-driver-32/lib
