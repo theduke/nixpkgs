@@ -3,33 +3,32 @@
 
 with lib; let
 
-  toolkit-version = "1.3.0";
+  container-toolkit-version = "1.3.0";
+  container-runtime-version = "3.4.0";
 
   libnvidia-container = callPackage ./libnvc.nix { };
 
   nvidia-container-runtime-src = fetchFromGitHub {
     owner = "NVIDIA";
     repo = "nvidia-container-runtime";
-    rev = "v3.4.0";
+    rev = "v${container-runtime-version}";
     sha256 = "095mks0r4079vawi50pk4zb5jk0g6s9idg2s1w55a0d27jkknldr";
   };
 
   nvidia-container-runtime = buildGoPackage {
     pname = "nvidia-container-runtime";
     version = "v3.4.0";
-
     goPackagePath = "nvidia-container-runtime";
-
     src = "${nvidia-container-runtime-src}/src";
   };
 
   nvidia-container-toolkit = buildGoModule {
     pname = "nvidia-container-toolkit";
-    version = "v${toolkit-version}";
+    version = "v${container-toolkit-version}";
     src = fetchFromGitHub {
       owner = "NVIDIA";
       repo = "nvidia-container-toolkit";
-      rev = "v${toolkit-version}";
+      rev = "v${container-toolkit-version}";
       sha256 = "04284bhgx4j55vg9ifvbji2bvmfjfy3h1lq7q356ffgw3yr9n0hn";
     };
     vendorSha256 = "17zpiyvf22skfcisflsp6pn56y6a793jcx89kw976fq2x5br1bz7"; 
@@ -71,6 +70,10 @@ in stdenv.mkDerivation rec {
   installPhase = ''
     mkdir -p $out/{bin,etc}
     cp -r bin $out
+
+    # Allow nvidia-container-runtime to find runc
+    wrapProgram $out/bin/nvidia-container-runtime --prefix PATH : "${runc}/bin"
+
     wrapProgram $out/bin/nvidia-container-cli \
       --prefix LD_LIBRARY_PATH : /run/opengl-driver/lib:/run/opengl-driver-32/lib
     cp ${./config.toml} $out/etc/config.toml
