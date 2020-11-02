@@ -74,23 +74,22 @@ in stdenv.mkDerivation rec {
     mkdir $out/lib
 
     # Generate a ldconfig cache file for nvidia-container-cli
-    ${pkgs.glibc.bin}/bin/ldconfig -C $out/lib/ld.so.cache ${pkgs.linuxPackages.nvidia_x11}/lib 
+    ${pkgs.glibc.bin}/bin/ldconfig -C $out/lib/ld.so.cache ${pkgs.linuxPackages.nvidia_x11}/lib ${pkgs.linuxPackages.nvidia_x11}-lib32/lib 
 
     # Allow nvidia-container-runtime to find runc
     wrapProgram $out/bin/nvidia-container-runtime \
-      --prefix PATH : "/run/current-system/sw/bin:${runc}/bin:$out/bin"
+      --prefix PATH : "${runc}/bin:$out/bin"
 
     # Create a symlink since the old hook path seems to still be used somewhere
     ln -s $out/bin/nvidia-container-toolkit $out/bin/nvidia-container-runtime-hook 
 
     wrapProgram $out/bin/nvidia-container-cli \
-      --prefix LD_LIBRARY_PATH : "/run/current-system/sw/lib:${pkgs.linuxPackages.nvidia_x11}/lib" \
+      --prefix LD_LIBRARY_PATH : "/run/opengl-driver/lib:/run/opengl-driver-32/lib:${pkgs.linuxPackages.nvidia_x11}/lib" \
       --prefix PATH : "/run/current-system/sw/bin:${pkgs.linuxPackages.nvidia_x11}/bin"
 
     cp ${./config.toml} $out/etc/config.toml
     substituteInPlace $out/etc/config.toml --subst-var-by glibcbin ${lib.getBin glibc}
     substituteInPlace $out/etc/config.toml --subst-var-by clipath "$out/bin/nvidia-container-cli"
-
     substituteInPlace $out/etc/config.toml --subst-var-by ldcachepath "$out/lib/ld.so.cache"
   '';
 
